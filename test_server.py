@@ -17,7 +17,7 @@ def test(num_model):
                 #mesh_terms=json.load(funseen)
 
     '''
-    with open('classif/112_mesh.json',mode='r') as funseen:
+    with open('1_mesh.json',mode='r') as funseen:
                 mesh_terms=json.load(funseen)
 
     #Compute embedding for both lists
@@ -32,10 +32,10 @@ def test(num_model):
     for i in range(len(articles)):
         cos_sc[str(pmid_mesh['pmid'][i])]=[{str(mesh_terms[j]): cosine_scores[i][j].item()} for j in range(len(mesh_terms))]
 
-    with open("classif/scores_finetuned.json", 'a+',encoding='UTF8') as f:
+    with open("scores_finetuned/scores_finetuned.json", 'a+',encoding='UTF8') as f:
         f.write(json.dumps(cos_sc, indent=4))
 
-    with open("classif/scores_finetuned.json", 'r',encoding='UTF8') as f:
+    with open("scores_finetuned/scores_finetuned.json", 'r',encoding='UTF8') as f:
         cos_sc=json.load(f)
     mesh_sim={}
     for pmid in cos_sc.keys():
