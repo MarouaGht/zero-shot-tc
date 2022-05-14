@@ -5,7 +5,7 @@ def test(num_model):
     model = SentenceTransformer('SSciFive/SSciFive_v'+str(num_model))
 
     # Two lists of sentences
-    pmid_mesh=pd.read_csv('zero-shot-tc/1_1_30969.csv',header=None)
+    pmid_mesh=pd.read_csv('1_1_30969.csv',header=None)
     pmid_mesh.columns=['pmid','article']
     articles = pmid_mesh['article'].tolist()
     '''
