@@ -32,10 +32,10 @@ def test(num_model):
     for i in range(len(articles)):
         cos_sc[str(pmid_mesh['pmid'][i])]=[{str(mesh_terms[j]): cosine_scores[i][j].item()} for j in range(len(mesh_terms))]
 
-    with open("scores_finetuned/scores_finetuned.json", 'a+',encoding='UTF8') as f:
+    with open("../scores_finetuned/scores_finetuned.json", 'a+',encoding='UTF8') as f:
         f.write(json.dumps(cos_sc, indent=4))
 
-    with open("scores_finetuned/scores_finetuned.json", 'r',encoding='UTF8') as f:
+    with open("../scores_finetuned/scores_finetuned.json", 'r',encoding='UTF8') as f:
         cos_sc=json.load(f)
     mesh_sim={}
     for pmid in cos_sc.keys():
@@ -46,7 +46,7 @@ def test(num_model):
         
         cos_sc[pmid]={k: v for k, v in sorted(mesh_sim.items(), key=lambda item: item[1], reverse=True)[:20]}
 
-    with open("scores/scores_finetuned_sorted"+str(num_model)+".json", 'w',encoding='UTF8') as f:
+    with open("../scores/scores_finetuned_sorted"+str(num_model)+".json", 'w',encoding='UTF8') as f:
         f.write(json.dumps(cos_sc, indent=4))
 
 
