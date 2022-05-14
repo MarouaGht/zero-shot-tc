@@ -2,7 +2,7 @@ from sentence_transformers import SentenceTransformer, util
 import json, pandas as pd
 
 def test(num_model):
-    model = SentenceTransformer('~/code/SSciFive/SSciFive_v'+str(num_model))
+    model = SentenceTransformer('SSciFive/SSciFive_v'+str(num_model))
 
     # Two lists of sentences
     pmid_mesh=pd.read_csv('zero-shot-tc/1_1_30969.csv',header=None)

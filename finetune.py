@@ -94,7 +94,7 @@ def fit_models(num_folder, nb_model,  input_csv_folder, output_model_file, batch
 '''
 
 #bert = 'monologg/biobert_v1.1_pubmed'
-output_model_file = '~/code/SSciFive/SSciFive_v'
+output_model_file = './SSciFive/SSciFive_v'
 #output_model_file = 'D:\SSciFive\'
 batch_size = 16
 nb_model = 0
