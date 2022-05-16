@@ -61,7 +61,7 @@ def fit_models(num_folder, nb_model,  input_csv_folder, output_model_file, batch
         evaluator=evaluator, #evalue chaque ev al step et à chaque epoch 
         epochs=epochs,
         #steps_per_epoch=2, #=nb_iteration if O, nb_iteration = nbligne / batch size = nb batch
-        evaluation_steps=50, #evalue chaque 10 steps
+        evaluation_steps=400, #evalue chaque 10 steps
         warmup_steps=warmup_steps,
         output_path= output_model_file + str(nb_model),
         show_progress_bar=True
