@@ -1,6 +1,6 @@
 import itertools
-from sentence_transformers import InputExample, datasets,  models, LoggingHandler, SentenceTransformer, losses
-from sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
+from sentence_transformers import InputExample, datasets,  models, LoggingHandler, SentenceTransformer, losses, evaluation
+
 from torch.utils.data import DataLoader
 import pandas as pd
 import os, math, sys, logging
@@ -15,36 +15,42 @@ def fit_models(num_folder, nb_model,  input_csv_folder, output_model_file, batch
     train_samples = []
     dev_samples=[]
     logging.info(f"input csv folder {input_csv_folder}")
-    chunk = pd.read_csv(input_csv_folder, names = ['abstract','mesh_pos', 'mesh_neg'], chunksize=5000) 
+    chunk = pd.read_csv(input_csv_folder, names = ['abstract','mesh_pos', 'mesh_neg'], chunksize=750) 
     cpt=1
     for chunk_data in chunk:
-        if (cpt==2):
+        if (cpt==1):
             mesh_pos = chunk_data['mesh_pos'].values.tolist()
             mesh_neg = chunk_data['mesh_neg'].values.tolist()
             abstracts = chunk_data['abstract'].values.tolist()
+            evaluator = evaluation.TripletEvaluator(abstracts, mesh_pos, mesh_neg)
             cpt+=1
-            break
-        '''
+            mesh_pos=[]
+            mesh_neg = []
+            abstracts=[]
+            
         else:
-            mesh_pos1 = chunk_data['mesh_pos'].values.tolist()
-            mesh_neg1 = chunk_data['mesh_neg'].values.tolist()
-            abstracts1 = chunk_data['abstract'].values.tolist()
-            break
-        '''
-        cpt+=1
+            mesh_pos.extend(chunk_data['mesh_pos'].values.tolist())
+            mesh_neg.extend(chunk_data['mesh_neg'].values.tolist())
+            abstracts.extend(chunk_data['abstract'].values.tolist())
+            cpt+=1
+        
+        if (cpt==21): break
     for i in range(len(abstracts)) :
-
-        train_samples.append(InputExample(texts=[abstracts[i], mesh_pos[i]], label=0.9))
-        train_samples.append(InputExample(texts=[abstracts[i], mesh_neg[i]], label=0.1))
-
-        #train_samples.append(InputExample(texts=[abstracts[i], mesh_pos[i],mesh_neg[i]]))
+                '''train_samples.append(InputExample(texts=[abstracts[i], mesh_pos[i]], label=0.9))
+                train_samples.append(InputExample(texts=[abstracts[i], mesh_neg[i]], label=0.1))'''
+                train_samples.append(InputExample(texts=[abstracts[i], mesh_pos[i],mesh_neg[i]]))
     print(train_samples)
     loader = DataLoader(train_samples, shuffle=True, batch_size=batch)  
+    
     '''
-    mesh_pos1.append(mesh_neg1)
-    scores=list(itertools.repeat(0.9, len(mesh_neg1)))
-    scores.append(list(itertools.repeat(0.1, len(mesh_neg1))))
-    abstracts1.append(abstracts1)
+    mesh_pos.extend(mesh_neg)
+    scores=list(itertools.repeat(0.9, len(mesh_neg)))
+    scores.extend(list(itertools.repeat(0.1, len(mesh_neg))))
+    abstracts.extend(abstracts)
+    evaluator = EmbeddingSimilarityEvaluator(abstracts,mesh_pos,scores)
+    '''
+    
+    '''
     dev_samples.append(abstracts1)
     dev_samples.append(mesh_pos1)
     dev_samples.append(scores)
@@ -52,12 +58,12 @@ def fit_models(num_folder, nb_model,  input_csv_folder, output_model_file, batch
     dev_samples.append(InputExample(texts=[abstracts for abstracts in abstracts1]))
     dev_samples.append([InputExample(texts=mesh_pos) for mesh_pos in mesh_pos1])
     dev_samples.append([InputExample(texts=score) for score in scores])
-
-    dev_data=[]
-    
     dev_dataloader = DataLoader(dev_samples, shuffle=False, batch_size=batch)
-    evaluator = EmbeddingSimilarityEvaluator(abstracts1,mesh_pos1,scores)
-    '''    
+    dev_data=[]
+    '''
+    
+    
+        
     epochs = 1
     warmup_steps = math.ceil(len(loader) * epochs / batch_size * 0.1) #10% of train data for warm-up
 
@@ -69,14 +75,15 @@ def fit_models(num_folder, nb_model,  input_csv_folder, output_model_file, batch
     else:
         model = SentenceTransformer(s_bert_model)
 
-    loss = losses.CosineSimilarityLoss(model)
-    #loss = losses.TripletLoss(model)
+    #loss = losses.CosineSimilarityLoss(model)
+    loss = losses.TripletLoss(model,distance_metric=losses.TripletDistanceMetric.COSINE)
     logging.info(f"fit {nb_model} start")
     model.fit(
         train_objectives=  [(loader, loss)],
-        #evaluator=evaluator,
+        evaluator=evaluator, #evalue chaque ev al step et à chaque epoch 
         epochs=epochs,
-        #evaluation_steps=1000,
+        #steps_per_epoch=2, #=nb_iteration if O, nb_iteration = nbligne / batch size = nb batch
+        evaluation_steps=5000, #evalue chaque 10 steps
         warmup_steps=warmup_steps,
         output_path= output_model_file + str(nb_model),
         show_progress_bar=True
@@ -84,14 +91,8 @@ def fit_models(num_folder, nb_model,  input_csv_folder, output_model_file, batch
     nb_model +=1
 
     print("finish")
-''' 
-    for i in range(10):
-        valid = pd.read_csv(validation_data+str(i)+'.csv', header= None) 
 
-        valid.columns = ['mesh','abstract']
-        
-        dev_data.append(InputExample(texts=[valid['mesh'], valid['abstract']]))
-'''
+    
 
 #bert = 'monologg/biobert_v1.1_pubmed'
 output_model_file = './SSciFive/SSciFive_v'
@@ -118,5 +119,5 @@ if __name__ == "__main__":
     main()'''
 #bert = './SSciFive/1'
 bert='razent/SciFive-base-Pubmed'
-fit_models(0, 8, 'pubmedfile7.csv', output_model_file, batch= 16, s_bert_model=bert)
+fit_models(0, 1, 'pubmedfile7.csv', output_model_file, batch= 32, s_bert_model=bert)
     
