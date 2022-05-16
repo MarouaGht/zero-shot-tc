@@ -17,7 +17,7 @@ def test(num_model):
                 #mesh_terms=json.load(funseen)
 
     '''
-    with open('1_mesh.json',mode='r') as funseen:
+    with open('112_mesh.json',mode='r') as funseen:
                 mesh_terms=json.load(funseen)
 
     #Compute embedding for both lists
