@@ -119,5 +119,5 @@ if __name__ == "__main__":
     main()'''
 #bert = './SSciFive/1'
 bert='razent/SciFive-base-Pubmed'
-fit_models(0, 1, 'pubmedfile7.csv', output_model_file, batch= 128, s_bert_model=bert)
+fit_models(0, 2, 'pubmedfile7.csv', output_model_file, batch= 512, s_bert_model=bert)
     
