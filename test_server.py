@@ -1,5 +1,5 @@
 from sentence_transformers import SentenceTransformer, util
-from sklearn.metrics.pairwise import cosine_distances
+from sklearn.metrics.pairwise import paired_cosine_distances
 import json, pandas as pd
 
 def test(num_model):
@@ -29,7 +29,7 @@ def test(num_model):
 
     #Compute cosine-similarits
     #cosine_scores = util.cos_sim(embeddings1, embeddings2)
-    cosine_scores=cosine_distances(embeddings1,embeddings2)
+    cosine_scores=paired_cosine_distances(embeddings1,embeddings2)
     cos_sc={}
     #Output the pairs with their score
     for i in range(len(articles)):
