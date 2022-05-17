@@ -1,6 +1,6 @@
 import itertools
 from sentence_transformers import InputExample, datasets,  models, LoggingHandler, SentenceTransformer, losses, evaluation
-
+from PubmedEvaluator import PubmedTruePositiveEvaluator
 from torch.utils.data import DataLoader
 import pandas as pd
 import os, math, sys, logging
@@ -38,15 +38,16 @@ def fit_models(
     loader = DataLoader(train_samples, shuffle=True, batch_size=batch)  
 
     #validation data
-    chunk = pd.read_csv(validation_data, names = ['abstract','mesh_pos', 'mesh_neg'], chunksize=1000) 
-    mesh_pos=[]
-    mesh_neg = []
-    abstracts=[]
-    for chunk_data in chunk:
-        mesh_pos.extend(chunk_data['mesh_pos'].values.tolist())
-        mesh_neg.extend(chunk_data['mesh_neg'].values.tolist())
-        abstracts.extend(chunk_data['abstract'].values.tolist())   
-    evaluator = evaluation.TripletEvaluator(abstracts, mesh_pos, mesh_neg)
+    # chunk = pd.read_csv(validation_data, names = ['abstract','mesh_pos', 'mesh_neg'], chunksize=1000) 
+    # mesh_pos=[]
+    # mesh_neg = []
+    # abstracts=[]
+    # for chunk_data in chunk:
+    #     mesh_pos.extend(chunk_data['mesh_pos'].values.tolist())
+    #     mesh_neg.extend(chunk_data['mesh_neg'].values.tolist())
+    #     abstracts.extend(chunk_data['abstract'].values.tolist())   
+    validation=pd.read_csv("valid.csv", names=['pmid','title','mesh_pos'])
+    evaluator = PubmedTruePositiveEvaluator(validation)
     evaluation_steps=(len(loader)/batch)/2
 
 
@@ -84,9 +85,9 @@ output_model_file = './SSciFive/SSciFive_v'
 
 batch_size = 64
 nb_model = 0
-training_data='all_triples.csv'
+training_data='finetuningtest.csv'#'all_triples.csv'
 validation_data='validation.csv'
 #bert = './SSciFive/1'
 bert='razent/SciFive-base-Pubmed'
-fit_models(0, 3, training_data, output_model_file, batch_size, bert, validation_data)
+fit_models(0, 2, training_data, output_model_file, batch_size, bert, validation_data)
     
