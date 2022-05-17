@@ -48,7 +48,7 @@ def fit_models(
     #     abstracts.extend(chunk_data['abstract'].values.tolist())   
     validation=pd.read_csv("valid.csv", names=['pmid','title','mesh_pos'])
     evaluator = PubmedTruePositiveEvaluator(validation)
-    evaluation_steps=1000
+    evaluation_steps=10
     print((len(loader)/batch)/2)
 
 
