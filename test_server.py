@@ -1,4 +1,5 @@
 from sentence_transformers import SentenceTransformer, util
+from sklearn.metrics.pairwise import cosine_distances
 import json, pandas as pd
 
 def test(num_model):
@@ -21,21 +22,23 @@ def test(num_model):
                 mesh_terms=json.load(funseen)
 
     #Compute embedding for both lists
-    embeddings1 = model.encode(articles, show_progress_bar=True, convert_to_tensor=True, )
-    embeddings2 = model.encode(mesh_terms, show_progress_bar=True, convert_to_tensor=True)
-
+    # embeddings1 = model.encode(articles, show_progress_bar=True, convert_to_tensor=True)
+    # embeddings2 = model.encode(mesh_terms, show_progress_bar=True, convert_to_tensor=True)
+    embeddings1 = model.encode(articles, show_progress_bar=True, convert_to_numpy=True)
+    embeddings2 = model.encode(mesh_terms, show_progress_bar=True, convert_to_numpy=True)
 
     #Compute cosine-similarits
-    cosine_scores = util.cos_sim(embeddings1, embeddings2)
+    #cosine_scores = util.cos_sim(embeddings1, embeddings2)
+    cosine_scores=cosine_distances(embeddings1,embeddings2)
     cos_sc={}
     #Output the pairs with their score
     for i in range(len(articles)):
         cos_sc[str(pmid_mesh['pmid'][i])]=[{str(mesh_terms[j]): cosine_scores[i][j].item()} for j in range(len(mesh_terms))]
 
-    with open("../scores_finetuned/scores_finetuned"+str(num_model)+".json", 'a+',encoding='UTF8') as f:
+    with open("../scores_finetuned/scores_finetuned2"+str(num_model)+".json", 'a+',encoding='UTF8') as f:
         f.write(json.dumps(cos_sc, indent=4))
 
-    with open("../scores_finetuned/scores_finetuned"+str(num_model)+".json", 'r',encoding='UTF8') as f:
+    with open("../scores_finetuned/scores_finetuned2"+str(num_model)+".json", 'r',encoding='UTF8') as f:
         cos_sc=json.load(f)
     mesh_sim={}
     for pmid in cos_sc.keys():
@@ -46,7 +49,7 @@ def test(num_model):
         
         cos_sc[pmid]={k: v for k, v in sorted(mesh_sim.items(), key=lambda item: item[1], reverse=True)[:20]}
 
-    with open("scores_finetuned_sorted"+str(num_model)+".json", 'w',encoding='UTF8') as f:
+    with open("scores_finetuned_sorted2"+str(num_model)+".json", 'w',encoding='UTF8') as f:
         f.write(json.dumps(cos_sc, indent=4))
 
 
