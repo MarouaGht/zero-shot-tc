@@ -22,14 +22,11 @@ def test(num_model):
                 mesh_terms=json.load(funseen)
 
     #Compute embedding for both lists
-    # embeddings1 = model.encode(articles, show_progress_bar=True, convert_to_tensor=True)
-    # embeddings2 = model.encode(mesh_terms, show_progress_bar=True, convert_to_tensor=True)
-    embeddings1 = model.encode(articles, show_progress_bar=True, convert_to_numpy=True)
-    embeddings2 = model.encode(mesh_terms, show_progress_bar=True, convert_to_numpy=True)
+    embeddings1 = model.encode(articles, show_progress_bar=True, convert_to_tensor=True)
+    embeddings2 = model.encode(mesh_terms, show_progress_bar=True, convert_to_tensor=True)
 
     #Compute cosine-similarits
-    #cosine_scores = util.cos_sim(embeddings1, embeddings2)
-    cosine_scores=paired_cosine_distances(embeddings1,embeddings2)
+    cosine_scores = util.cos_sim(embeddings1, embeddings2)
     cos_sc={}
     #Output the pairs with their score
     for i in range(len(articles)):
