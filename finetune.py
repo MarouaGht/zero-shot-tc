@@ -83,7 +83,7 @@ def fit_models(
 #bert = 'monologg/biobert_v1.1_pubmed'
 output_model_file = './SSciFive/SSciFive_v'
 
-batch_size = 64
+batch_size = 128
 nb_model = 0
 training_data='finetuningtest.csv'#'all_triples.csv'
 validation_data='validation.csv'
