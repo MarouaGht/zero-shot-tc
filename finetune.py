@@ -26,7 +26,7 @@ def fit_models(
     mesh_pos=[]
     mesh_neg = []
     abstracts=[]
-    chunk = pd.read_csv(input_csv_folder, names = ['abstract','mesh_pos', 'mesh_neg'], chunksize=1000) 
+    chunk = pd.read_csv(input_csv_folder, names = ['abstract','mesh_pos', 'mesh_neg'], chunksize=5000) 
     for chunk_data in chunk:
         mesh_pos.extend(chunk_data['mesh_pos'].values.tolist())
         mesh_neg.extend(chunk_data['mesh_neg'].values.tolist())
@@ -34,23 +34,11 @@ def fit_models(
 
     for i in range(len(abstracts)) :
                 train_samples.append(InputExample(texts=[abstracts[i], mesh_pos[i],mesh_neg[i]]))
-    print(train_samples)
     loader = DataLoader(train_samples, shuffle=True, batch_size=batch)  
 
-    #validation data
-    # chunk = pd.read_csv(validation_data, names = ['abstract','mesh_pos', 'mesh_neg'], chunksize=1000) 
-    # mesh_pos=[]
-    # mesh_neg = []
-    # abstracts=[]
-    # for chunk_data in chunk:
-    #     mesh_pos.extend(chunk_data['mesh_pos'].values.tolist())
-    #     mesh_neg.extend(chunk_data['mesh_neg'].values.tolist())
-    #     abstracts.extend(chunk_data['abstract'].values.tolist())   
-    validation=pd.read_csv("valid.csv", names=['pmid','title','mesh_pos'])
-    evaluator = PubmedTruePositiveEvaluator(validation)
-    evaluation_steps=10
-    print((len(loader)/batch)/2)
 
+    validation=pd.read_csv(validation_data, names=['pmid','title','mesh_pos'])
+    evaluator = PubmedTruePositiveEvaluator(validation, mesh_pos)
 
     epochs = 1
     warmup_steps = math.ceil(len(loader) * epochs / batch_size * 0.1) #10% of train data for warm-up
@@ -79,16 +67,15 @@ def fit_models(
 
     logging.info("finish")
 
-    
-
 #bert = 'monologg/biobert_v1.1_pubmed'
 output_model_file = './SSciFive/SSciFive_v'
-
-batch_size = 128
+evaluation_steps=4
+#print((len(loader)/batch)/2)
+batch_size = 64
 nb_model = 0
-training_data='finetuningtest.csv'#'all_triples.csv'
-validation_data='validation.csv'
+training_data='all_triples.csv'
+validation_data='evaluation.csv'
 #bert = './SSciFive/1'
 bert='razent/SciFive-base-Pubmed'
-fit_models(0, 2, training_data, output_model_file, batch_size, bert, validation_data)
+fit_models(0, 4, training_data, output_model_file, batch_size, bert, validation_data)
     

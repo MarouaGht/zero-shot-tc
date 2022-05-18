@@ -8,7 +8,7 @@ class PubmedTruePositiveEvaluator(SentenceEvaluator):
     def __init__(
         self, 
         validation_data, 
-        #mesh_terms, 
+        mesh_terms, 
         name: str = "",
         batch_size: int = 16,
         show_progress_bar: bool = True,
@@ -17,16 +17,17 @@ class PubmedTruePositiveEvaluator(SentenceEvaluator):
     ):
         self.pmids=validation_data['pmid'].values.tolist()
         self.titles=validation_data['title'].values.tolist()
-        self.mesh_terms=[]
+        self.mesh_terms=mesh_terms
         self.mesh_pos=self.get_mesh_pos(validation_data)
         
-        self.mesh_terms=self.mesh_pos
+        self.mesh_terms.extend(self.mesh_pos)
+        self.mesh_terms=list(set(self.mesh_terms))
         self.pmid_mesh=self.get_pmid_mesh(validation_data)
         self.name=name
         self.batch_size=batch_size
         self.top_ks=top_ks
         self.start = 0
-        self.true_positives={k:0 for k in self.top_ks}
+        self.true_positives={k:0 for k in self.top_ks} #map where keys = top_k and values = number of true positives
 
         if show_progress_bar is None:
             show_progress_bar = (
@@ -63,8 +64,8 @@ class PubmedTruePositiveEvaluator(SentenceEvaluator):
         cosine_scores = util.cos_sim(title_embeddings, mesh_embeddings)
 
         for top_k in self.top_ks:
-            results=self.sort_cosine_scores(cosine_scores,top_k)     
-            self.compute_true_positives(results,top_k)
+            pred_positives=self.sort_cosine_scores(cosine_scores,top_k)     
+            self.compute_true_positives(pred_positives,top_k)
             logger.info("Number of true positives :   \t{:.2f}/".format(self.true_positives[top_k]))
 
         if output_path is not None and self.write_csv:
@@ -83,6 +84,7 @@ class PubmedTruePositiveEvaluator(SentenceEvaluator):
     
 
     def true_positives_per_article(self,mesh_pred, mesh_true):
+        print([mesh for mesh in mesh_pred if mesh in mesh_true])
         return len([mesh for mesh in mesh_pred if mesh in mesh_true])
 
     def compute_true_positives(self,results, top_k):
@@ -91,6 +93,7 @@ class PubmedTruePositiveEvaluator(SentenceEvaluator):
             mesh_true=self.pmid_mesh[pmid]
             mesh_pred=results[pmid]
             pmid_metric[pmid]=self.true_positives_per_article(mesh_pred,mesh_true)
+            print(top_k,pmid_metric[pmid])
             self.true_positives[top_k]+=pmid_metric[pmid]
 
 
