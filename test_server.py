@@ -50,4 +50,4 @@ def test(num_model):
         f.write(json.dumps(cos_sc, indent=4))
 
 
-test(3)
+test(4)
