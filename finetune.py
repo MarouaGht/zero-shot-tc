@@ -69,7 +69,7 @@ def fit_models(
 
 #bert = 'monologg/biobert_v1.1_pubmed'
 output_model_file = './SSciFive/SSciFive_v'
-evaluation_steps=4
+evaluation_steps=450
 #print((len(loader)/batch)/2)
 batch_size = 64
 nb_model = 0
