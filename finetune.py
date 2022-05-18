@@ -61,15 +61,18 @@ def fit_models(
         evaluation_steps=evaluation_steps, #evalue chaque 10 steps
         warmup_steps=warmup_steps,
         output_path= output_model_file + str(nb_model),
-        show_progress_bar=True
+        show_progress_bar=True,
+        checkpoint_path='.checkpoints/SSciFive_v'+str(nb_model)+'/',
+        checkpoint_save_steps=2000,
+        checkpoint_save_total_limit=8
     )  
-    nb_model +=1
+    #nb_model +=1
 
     logging.info("finish")
 
 #bert = 'monologg/biobert_v1.1_pubmed'
 output_model_file = './SSciFive/SSciFive_v'
-evaluation_steps=450
+evaluation_steps=2000
 #print((len(loader)/batch)/2)
 batch_size = 64
 nb_model = 0
@@ -77,5 +80,5 @@ training_data='all_triples.csv'
 validation_data='evaluation.csv'
 #bert = './SSciFive/1'
 bert='razent/SciFive-base-Pubmed'
-fit_models(0, 4, training_data, output_model_file, batch_size, bert, validation_data)
+fit_models(0, 5, training_data, output_model_file, batch_size, bert, validation_data)
     

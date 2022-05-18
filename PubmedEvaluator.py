@@ -80,11 +80,11 @@ class PubmedTruePositiveEvaluator(SentenceEvaluator):
         end = time.time()
         print(f'{(end - start):.1f} seconds for evaluation')
         self.start = time.time()
+        logger.info("Number of mesh_terms :   \t{:.2f}/".format(len(self.mesh_terms)))
         return self.true_positives[self.top_ks[-1]]/len(self.mesh_terms)
     
 
     def true_positives_per_article(self,mesh_pred, mesh_true):
-        print([mesh for mesh in mesh_pred if mesh in mesh_true])
         return len([mesh for mesh in mesh_pred if mesh in mesh_true])
 
     def compute_true_positives(self,results, top_k):
@@ -93,7 +93,6 @@ class PubmedTruePositiveEvaluator(SentenceEvaluator):
             mesh_true=self.pmid_mesh[pmid]
             mesh_pred=results[pmid]
             pmid_metric[pmid]=self.true_positives_per_article(mesh_pred,mesh_true)
-            print(top_k,pmid_metric[pmid])
             self.true_positives[top_k]+=pmid_metric[pmid]
 
 
