@@ -1,9 +1,9 @@
-import itertools
+
 from sentence_transformers import InputExample, datasets,  models, LoggingHandler, SentenceTransformer, losses, evaluation
 from PubmedEvaluator import PubmedTruePositiveEvaluator
 from torch.utils.data import DataLoader
 import pandas as pd
-import os, math, sys, logging
+import math, logging
 
 def fit_models(
     num_folder, 
@@ -79,6 +79,6 @@ nb_model = 0
 training_data='all_triples.csv'
 validation_data='evaluation.csv'
 #bert = './SSciFive/1'
-bert='razent/SciFive-base-Pubmed'
-fit_models(0, 5, training_data, output_model_file, batch_size, bert, validation_data)
+bert='SSciFive/SSciFive_v5'
+fit_models(1, 5, training_data, output_model_file, batch_size, bert, validation_data)
     

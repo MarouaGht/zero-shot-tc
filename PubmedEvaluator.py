@@ -126,6 +126,5 @@ class PubmedTruePositiveEvaluator(SentenceEvaluator):
         list_mesh=validation_data['mesh_pos'].values.tolist()
         mesh_pos= []
         for line in list_mesh:
-            print(line)
             mesh_pos.extend(line.split(';'))
         return mesh_pos
