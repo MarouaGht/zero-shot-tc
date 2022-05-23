@@ -34,7 +34,8 @@ def fit_models(
 
     for i in range(len(abstracts)) :
                 train_samples.append(InputExample(texts=[abstracts[i], mesh_pos[i],mesh_neg[i]]))
-    loader = DataLoader(train_samples, shuffle=True, batch_size=batch)  
+    #loader = DataLoader(train_samples, shuffle=True, batch_size=batch)  
+    loader=datasets.NoDuplicatesDataLoader(train_samples,batch_size=batch)
 
 
     validation=pd.read_csv(validation_data, names=['pmid','title','mesh_pos'])
