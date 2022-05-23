@@ -53,10 +53,10 @@ def test(num_model):
     for i in range(len(articles)):
         cos_sc[str(pmid_mesh['pmid'][i])]=[{str(mesh_terms[j]): cosine_scores[i][j].item()} for j in range(len(mesh_terms))]
 
-    with open("../scores_finetuned/scores_finetuned_128"+str(num_model)+".json", 'a+',encoding='UTF8') as f:
+    with open("../scores_finetuned/scores_finetuned_128_v"+str(num_model)+".json", 'a+',encoding='UTF8') as f:
         f.write(json.dumps(cos_sc, indent=4))
 
-    with open("../scores_finetuned/scores_finetuned_128"+str(num_model)+".json", 'r',encoding='UTF8') as f:
+    with open("../scores_finetuned/scores_finetuned_128_v"+str(num_model)+".json", 'r',encoding='UTF8') as f:
         cos_sc=json.load(f)
     mesh_sim={}
     for pmid in cos_sc.keys():
@@ -67,10 +67,10 @@ def test(num_model):
         
         cos_sc[pmid]={k: v for k, v in sorted(mesh_sim.items(), key=lambda item: item[1], reverse=True)[:20]}
 
-    with open("scores_finetuned_sorted_128"+str(num_model)+".json", 'w',encoding='UTF8') as f:
+    with open("scores_finetuned_sorted_128_v"+str(num_model)+".json", 'w',encoding='UTF8') as f:
         f.write(json.dumps(cos_sc, indent=4))
 
 golden_data= '../dataset_processed/pmid_mesh_unseen/1109_34727799_34757942.json'
-results_file='scores_finetuned_sorted_v5_128_1109.json'
+results_file='scores_finetuned_sorted_128_v5.json'
 eval_results(results_file,golden_data)
 test(5)
