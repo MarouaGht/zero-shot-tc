@@ -76,7 +76,7 @@ def fit_models(
 
 #bert = 'monologg/biobert_v1.1_pubmed'
 output_model_file = './SSciFive/SSciFive_v'
-evaluation_steps=2000
+evaluation_steps=400#2000
 #print((len(loader)/batch)/2)
 batch_size = 128
 nb_model = 0
