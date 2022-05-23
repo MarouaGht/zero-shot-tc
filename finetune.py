@@ -27,10 +27,13 @@ def fit_models(
     mesh_neg = []
     abstracts=[]
     chunk = pd.read_csv(input_csv_folder, names = ['abstract','mesh_pos', 'mesh_neg'], chunksize=5000) 
+    cpt=1
     for chunk_data in chunk:
         mesh_pos.extend(chunk_data['mesh_pos'].values.tolist())
         mesh_neg.extend(chunk_data['mesh_neg'].values.tolist())
         abstracts.extend(chunk_data['abstract'].values.tolist())
+        cpt+=1
+        if cpt==21: break
 
     for i in range(len(abstracts)) :
                 train_samples.append(InputExample(texts=[abstracts[i], mesh_pos[i],mesh_neg[i]]))
@@ -75,7 +78,7 @@ def fit_models(
 output_model_file = './SSciFive/SSciFive_v'
 evaluation_steps=2000
 #print((len(loader)/batch)/2)
-batch_size = 64
+batch_size = 128
 nb_model = 0
 training_data='all_triples.csv'
 validation_data='evaluation.csv'
