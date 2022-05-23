@@ -69,8 +69,7 @@ def test(num_model):
 
     with open("scores_finetuned_sorted_128_v"+str(num_model)+".json", 'w',encoding='UTF8') as f:
         f.write(json.dumps(cos_sc, indent=4))
-
+test(5)
 golden_data= '../dataset_processed/pmid_mesh_unseen/1109_34727799_34757942.json'
 results_file='scores_finetuned_sorted_128_v5.json'
 eval_results(results_file,golden_data)
-test(5)
